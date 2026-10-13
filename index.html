@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="vi" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camiekanji - Học Tiếng Trung Mua Sắm & Quy Đổi Tiền Tệ</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti for gamification rewards -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body class="h-full bg-slate-50 text-slate-800 font-sans flex flex-col antialiased">
+
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('home')">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-white font-extrabold text-xl shadow-md shadow-emerald-200">
+                    C
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg text-slate-900 leading-tight">Camiekanji</h1>
+                    <p class="text-xs text-slate-500">Học Tiếng Trung Mua Sắm & Số Đếm</p>
+                </div>
+            </div>
+
+            <!-- Gamification Stats bar -->
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-1.5 bg-amber-50 px-3 py-1.5 rounded-full border border-amber-200 text-amber-700 font-semibold text-sm">
+                    <i class="fa-solid fa-fire text-amber-500 animate-pulse"></i>
+                    <span id="streakCount">3</span> ngày
+                </div>
+                <div class="flex items-center space-x-1.5 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200 text-emerald-700 font-semibold text-sm">
+                    <i class="fa-solid fa-star text-emerald-500"></i>
+                    <span id="scoreCount">120</span> XP
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col md:flex-row gap-6">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="w-full md:w-64 shrink-0">
+            <nav class="bg-white rounded-2xl border border-slate-200 p-3 shadow-sm space-y-1">
+                <button onclick="switchTab('home')" id="nav-home" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-slate-600 hover:bg-slate-50 transition-all text-left">
+                    <i class="fa-solid fa-house w-5 text-center text-emerald-500"></i>
+                    <span>Tổng quan</span>
+                </button>
+                <button onclick="switchTab('numbers')" id="nav-numbers" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-slate-600 hover:bg-slate-50 transition-all text-left">
+                    <i class="fa-solid fa-calculator w-5 text-center text-blue-500"></i>
+                    <span>Số đếm & Tra cứu</span>
+                </button>
+                <button onclick="switchTab('vocabulary')" id="nav-vocabulary" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-slate-600 hover:bg-slate-50 transition-all text-left">
+                    <i class="fa-solid fa-book-open w-5 text-center text-purple-500"></i>
+                    <span>Từ vựng Mua sắm</span>
+                </button>
+                <button onclick="switchTab('dialogues')" id="nav-dialogues" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-slate-600 hover:bg-slate-50 transition-all text-left">
+                    <i class="fa-solid fa-comments w-5 text-center text-amber-500"></i>
+                    <span>Hội thoại thực tế</span>
+                </button>
+                <button onclick="switchTab('quiz')" id="nav-quiz" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-slate-600 hover:bg-slate-50 transition-all text-left">
+                    <i class="fa-solid fa-gamepad w-5 text-center text-rose-500"></i>
+                    <span>Trắc nghiệm & Thử thách</span>
+                </button>
+                <button onclick="switchTab('calculator')" id="nav-calculator" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-slate-600 hover:bg-slate-50 transition-all text-left">
+                    <i class="fa-solid fa-money-bill-transfer w-5 text-center text-emerald-600"></i>
+                    <span>Đổi tiền & Đọc giá</span>
+                </button>
+            </nav>
+
+            <!-- Quick Tip Card -->
+            <div class="mt-6 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-5 text-white shadow-lg shadow-emerald-500/20 hidden md:block">
+                <div class="flex items-center space-x-2 mb-2">
+                    <i class="fa-solid fa-lightbulb text-amber-300"></i>
+                    <h4 class="font-bold text-sm">Mẹo nhỏ cùng Camiekanji</h4>
+                </div>
+                <p class="text-xs text-emerald-100 leading-relaxed">
+                    Khẩu ngữ mua sắm Trung Quốc thường dùng <span class="font-semibold text-white">"块" (Kuài)</span> thay cho "元", và <span class="font-semibold text-white">"毛" (Máo)</span> thay cho "角"!
+                </p>
+                <button onclick="speakText('一块钱')" class="mt-3 bg-white/20 hover:bg-white/30 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5">
+                    <i class="fa-solid fa-volume-high"></i>
+                    <span>Nghe "yī kuài qián"</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm min-h-[600px] flex flex-col">
+
+            <!-- TAB 1: HOME / DASHBOARD -->
+            <div id="tab-home" class="tab-content space-y-6">
+                <div class="bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-blue-500/10 rounded-2xl p-6 md:p-8 border border-emerald-100 flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="space-y-3">
+                        <span class="bg-emerald-100 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Chào mừng đến với Camiekanji</span>
+                        <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900">Chủ đề: Mua sắm & Quy đổi tiền tệ</h2>
+                        <p class="text-slate-600 max-w-xl text-sm leading-relaxed">
+                            Cùng Camiekanji làm chủ kỹ năng giao tiếp khi đi mua sắm, trả giá, quy đổi tiền Việt - Trung 2 chiều và luyện phát âm số tiền chuẩn bản xứ.
+                        </p>
+                        <div class="pt-2 flex flex-wrap gap-3">
+                            <button onclick="switchTab('calculator')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-5 py-2.5 rounded-xl text-sm shadow-md shadow-emerald-600/20 transition flex items-center space-x-2">
+                                <i class="fa-solid fa-money-bill-transfer"></i>
+                                <span>Thử công cụ Đổi tiền</span>
+                            </button>
+                            <button onclick="switchTab('vocabulary')" class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-semibold px-5 py-2.5 rounded-xl text-sm transition">
+                                Từ vựng Mua sắm
+                            </button>
+                        </div>
+                    </div>
+                    <div class="w-32 h-32 md:w-48 md:h-48 bg-emerald-100 rounded-3xl flex items-center justify-center shrink-0 shadow-inner text-emerald-600 text-6xl">
+                        <i class="fa-solid fa-bag-shopping"></i>
+                    </div>
+                </div>
+
+                <!-- Learning Progress Grid -->
+                <h3 class="font-bold text-lg text-slate-800 pt-4">Lộ trình học tập tại Camiekanji</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div onclick="switchTab('calculator')" class="bg-slate-50 hover:bg-emerald-50/50 border border-slate-200 hover:border-emerald-200 rounded-xl p-5 cursor-pointer transition group">
+                        <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center mb-3 group-hover:scale-110 transition">
+                            <i class="fa-solid fa-money-bill-transfer text-lg"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-900 mb-1">Đổi tiền & Đọc giá tiền</h4>
+                        <p class="text-xs text-slate-500 mb-4">Quy đổi 2 chiều VND ⇄ CNY, phân tích Khối/Hào/Xu & phát âm.</p>
+                        <div class="flex items-center justify-between text-xs font-semibold text-emerald-600">
+                            <span>Mới nâng cấp</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </div>
+                    </div>
+
+                    <div onclick="switchTab('numbers')" class="bg-slate-50 hover:bg-emerald-50/50 border border-slate-200 hover:border-emerald-200 rounded-xl p-5 cursor-pointer transition group">
+                        <div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mb-3 group-hover:scale-110 transition">
+                            <i class="fa-solid fa-calculator text-lg"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-900 mb-1">Số đếm & Tra cứu</h4>
+                        <p class="text-xs text-slate-500 mb-4">Học đếm từ 1-100 và phát âm Pinyin chuẩn.</p>
+                        <div class="flex items-center justify-between text-xs font-semibold text-emerald-600">
+                            <span>Bắt đầu</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </div>
+                    </div>
+
+                    <div onclick="switchTab('vocabulary')" class="bg-slate-50 hover:bg-emerald-50/50 border border-slate-200 hover:border-emerald-200 rounded-xl p-5 cursor-pointer transition group">
+                        <div class="w-10 h-10 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center mb-3 group-hover:scale-110 transition">
+                            <i class="fa-solid fa-book-open text-lg"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-900 mb-1">Từ vựng Mua sắm</h4>
+                        <p class="text-xs text-slate-500 mb-4">Các thẻ Flashcard lật từ vựng thông dụng: rẻ, đắt, giảm giá...</p>
+                        <div class="flex items-center justify-between text-xs font-semibold text-emerald-600">
+                            <span>12 từ vựng</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </div>
+                    </div>
+
+                    <div onclick="switchTab('dialogues')" class="bg-slate-50 hover:bg-emerald-50/50 border border-slate-200 hover:border-emerald-200 rounded-xl p-5 cursor-pointer transition group">
+                        <div class="w-10 h-10 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center mb-3 group-hover:scale-110 transition">
+                            <i class="fa-solid fa-comments text-lg"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-900 mb-1">Hội thoại thực tế</h4>
+                        <p class="text-xs text-slate-500 mb-4">Tình huống mặc cả quần áo, thanh toán giữa khách và chủ quán.</p>
+                        <div class="flex items-center justify-between text-xs font-semibold text-emerald-600">
+                            <span>3 tình huống</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </div>
+                    </div>
+
+                    <div onclick="switchTab('quiz')" class="bg-slate-50 hover:bg-emerald-50/50 border border-slate-200 hover:border-emerald-200 rounded-xl p-5 cursor-pointer transition group">
+                        <div class="w-10 h-10 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center mb-3 group-hover:scale-110 transition">
+                            <i class="fa-solid fa-gamepad text-lg"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-900 mb-1">Kiểm tra & Thử thách</h4>
+                        <p class="text-xs text-slate-500 mb-4">Thử thách trắc nghiệm tích lũy điểm XP và luyện phản xạ.</p>
+                        <div class="flex items-center justify-between text-xs font-semibold text-emerald-600">
+                            <span>Luyện tập</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: NUMBERS (Số đếm) -->
+            <div id="tab-numbers" class="tab-content hidden space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">Bảng Số Đếm Tiếng Trung (1 - 100)</h2>
+                        <p class="text-xs text-slate-500">Bấm vào từng số để nghe phát âm chuẩn từ Camiekanji.</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <input type="text" id="numberSearch" placeholder="Tìm số (ví dụ: 8, shí...)" oninput="filterNumbers()" class="border border-slate-200 rounded-xl px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                </div>
+
+                <div id="numberGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 max-h-[480px] overflow-y-auto pr-1">
+                    <!-- Populated via JS -->
+                </div>
+
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
+                    <div>
+                        <h4 class="font-bold text-slate-900 text-sm">Trò chơi đoán số nhanh</h4>
+                        <p class="text-xs text-slate-500">Kiểm tra khả năng nghe và nhận diện số tiếng Trung của bạn.</p>
+                    </div>
+                    <button onclick="openNumberGame()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-xl text-xs shadow transition">
+                        Chơi ngay
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAB 3: VOCABULARY (Từ vựng Mua sắm) -->
+            <div id="tab-vocabulary" class="tab-content hidden space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">Từ Vựng Mua Sắm (Camiekanji Flashcards)</h2>
+                        <p class="text-xs text-slate-500">Lật thẻ flashcard để xem nghĩa và luyện phát âm.</p>
+                    </div>
+                    <div class="flex items-center space-x-2 text-sm text-slate-600 font-medium">
+                        Thẻ <span id="currentCardIdx">1</span> / <span id="totalCardIdx">12</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col items-center justify-center py-6">
+                    <div class="w-full max-w-md h-72 perspective-1000 cursor-pointer" onclick="flipFlashcard()">
+                        <div id="flashcardInner" class="w-full h-full relative transform-style-3d transition-transform duration-500 shadow-xl rounded-2xl">
+                            <!-- Front Face -->
+                            <div class="absolute inset-0 bg-white border-2 border-slate-200 rounded-2xl p-6 flex flex-col items-center justify-center text-center backface-hidden">
+                                <span class="absolute top-4 left-4 bg-emerald-100 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-full">Chữ Hán</span>
+                                <div id="fcHanzi" class="text-6xl font-extrabold text-slate-900 mb-3">多少钱</div>
+                                <div id="fcPinyin" class="text-lg font-semibold text-emerald-600 mb-1">Duōshǎo qián</div>
+                                <p class="text-xs text-slate-400 mt-4"><i class="fa-solid fa-rotate mr-1"></i> Bấm để lật xem nghĩa</p>
+                            </div>
+                            <!-- Back Face -->
+                            <div class="absolute inset-0 bg-emerald-600 text-white rounded-2xl p-6 flex flex-col items-center justify-center text-center backface-hidden rotate-y-180">
+                                <span class="absolute top-4 left-4 bg-white/20 text-white text-xs font-bold px-2.5 py-1 rounded-full">Ý nghĩa & Ví dụ</span>
+                                <div id="fcMeaning" class="text-2xl font-bold mb-2">Bao nhiêu tiền?</div>
+                                <div id="fcExample" class="text-sm text-emerald-100 italic mb-4">"这个多少钱？" (Cái này bao nhiêu tiền?)</div>
+                                <button onclick="event.stopPropagation(); speakText(document.getElementById('fcHanzi').innerText)" class="bg-white text-emerald-700 font-semibold px-4 py-2 rounded-xl text-xs shadow hover:bg-emerald-50 transition flex items-center space-x-1.5">
+                                    <i class="fa-solid fa-volume-high"></i>
+                                    <span>Nghe phát âm</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-4 mt-6">
+                        <button onclick="prevFlashcard()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-4 py-2.5 rounded-xl text-sm transition flex items-center space-x-2">
+                            <i class="fa-solid fa-arrow-left"></i>
+                            <span>Trước</span>
+                        </button>
+                        <button onclick="speakText(document.getElementById('fcHanzi').innerText)" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-5 py-2.5 rounded-xl text-sm shadow transition flex items-center space-x-2">
+                            <i class="fa-solid fa-volume-high"></i>
+                            <span>Phát âm</span>
+                        </button>
+                        <button onclick="nextFlashcard()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-4 py-2.5 rounded-xl text-sm transition flex items-center space-x-2">
+                            <span>Sau</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: DIALOGUES (Hội thoại thực tế) -->
+            <div id="tab-dialogues" class="tab-content hidden space-y-6">
+                <div class="border-b border-slate-100 pb-4">
+                    <h2 class="text-xl font-bold text-slate-900">Hội Thoại Mua Sắm Thực Tế</h2>
+                    <p class="text-xs text-slate-500">Đoạn hội thoại chuẩn giữa Người mua và Người bán do Camiekanji biên soạn.</p>
+                </div>
+
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="loadDialogue(0)" id="dlg-btn-0" class="dlg-tab-btn bg-emerald-600 text-white text-xs font-semibold px-4 py-2 rounded-xl transition">Tình huống 1: Hỏi giá áo</button>
+                    <button onclick="loadDialogue(1)" id="dlg-btn-1" class="dlg-tab-btn bg-slate-100 text-slate-700 hover:bg-slate-200 text-xs font-semibold px-4 py-2 rounded-xl transition">Tình huống 2: Mặc cả giá</button>
+                    <button onclick="loadDialogue(2)" id="dlg-btn-2" class="dlg-tab-btn bg-slate-100 text-slate-700 hover:bg-slate-200 text-xs font-semibold px-4 py-2 rounded-xl transition">Tình huống 3: Thanh toán</button>
+                </div>
+
+                <div id="dialogueContainer" class="space-y-4 max-h-[420px] overflow-y-auto pr-2">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+
+            <!-- TAB 5: QUIZ (Trắc nghiệm) -->
+            <div id="tab-quiz" class="tab-content hidden space-y-6">
+                <div class="border-b border-slate-100 pb-4 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">Thử Thách Camiekanji Quiz</h2>
+                        <p class="text-xs text-slate-500">Kiểm tra từ vựng và số đếm để nhận điểm thưởng XP.</p>
+                    </div>
+                    <div class="text-sm font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-xl border border-emerald-200">
+                        Câu hỏi: <span id="quizCurrentNum">1</span>/5
+                    </div>
+                </div>
+
+                <div id="quizCard" class="bg-slate-50 border border-slate-200 rounded-2xl p-6 space-y-6">
+                    <div class="flex items-center justify-between">
+                        <span id="quizCategoryBadge" class="bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full">Từ vựng</span>
+                        <button onclick="speakText(quizData[currentQuizIdx].audioText)" class="text-emerald-600 hover:text-emerald-700 text-sm font-semibold flex items-center space-x-1.5">
+                            <i class="fa-solid fa-volume-high text-base"></i>
+                            <span>Nghe gợi ý</span>
+                        </button>
+                    </div>
+
+                    <div class="text-center py-4">
+                        <h3 id="quizQuestionText" class="text-2xl md:text-3xl font-extrabold text-slate-900 mb-2"></h3>
+                        <p id="quizSubText" class="text-sm text-slate-500"></p>
+                    </div>
+
+                    <div id="quizOptionsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <!-- Options populated via JS -->
+                    </div>
+
+                    <div id="quizFeedback" class="hidden p-4 rounded-xl text-sm font-medium flex items-center space-x-2">
+                        <!-- Feedback message -->
+                    </div>
+
+                    <div class="flex justify-end pt-2">
+                        <button id="nextQuizBtn" onclick="nextQuizQuestion()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition shadow">
+                            Câu tiếp theo <i class="fa-solid fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="quizCompleteCard" class="hidden bg-emerald-50 border border-emerald-200 rounded-2xl p-8 text-center space-y-4">
+                    <div class="w-16 h-16 bg-emerald-500 text-white rounded-full flex items-center justify-center text-3xl mx-auto shadow-md">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-slate-900">Hoàn thành xuất sắc thử thách Camiekanji!</h3>
+                    <p class="text-slate-600 text-sm">Bạn đã trả lời đúng <span id="correctScore" class="font-bold text-emerald-600">5</span>/5 câu hỏi và nhận được <span class="font-bold text-amber-500">+50 XP</span>.</p>
+                    <button onclick="restartQuiz()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-2.5 rounded-xl text-sm shadow transition">
+                        Làm lại bài kiểm tra
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAB 6: CALCULATOR & BI-DIRECTIONAL CURRENCY CONVERTER -->
+            <div id="tab-calculator" class="tab-content hidden space-y-6">
+                <div class="border-b border-slate-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">Máy Tính Quy Đổi Tiền Tệ & Đọc Giá Tiếng Trung</h2>
+                        <p class="text-xs text-slate-500">Chuyển đổi linh hoạt 2 chiều VND ⇄ CNY, phân tích đơn vị Yuan/Jiao/Fen và luyện phát âm.</p>
+                    </div>
+                    <!-- Exchange Rate Config Box -->
+                    <div class="bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 flex items-center space-x-2 text-xs">
+                        <span class="text-slate-500 font-medium"><i class="fa-solid fa-arrows-rotate text-emerald-600"></i> Tỷ giá:</span>
+                        <span class="font-bold text-slate-800">1 CNY =</span>
+                        <input type="number" id="exchangeRateInput" value="3870" step="10" oninput="runConversion()" class="w-20 bg-white border border-slate-300 rounded px-2 py-0.5 text-xs font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                        <span class="font-bold text-slate-800">VND</span>
+                    </div>
+                </div>
+
+                <!-- Mode Switcher Tabs -->
+                <div class="flex border-b border-slate-200 space-x-4">
+                    <button onclick="setCalcMode('cny2vnd')" id="calcMode-cny2vnd" class="pb-3 text-sm font-bold border-b-2 border-emerald-600 text-emerald-600 transition flex items-center space-x-2">
+                        <i class="fa-solid fa-yen-sign"></i>
+                        <span>Tệ (CNY) ➔ VNĐ & Phát âm</span>
+                    </button>
+                    <button onclick="setCalcMode('vnd2cny')" id="calcMode-vnd2cny" class="pb-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700 transition flex items-center space-x-2">
+                        <i class="fa-solid fa-money-bill-wave"></i>
+                        <span>VNĐ ➔ Tệ (CNY) & Phát âm</span>
+                    </button>
+                </div>
+
+                <!-- Conversion Workspace -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                    <!-- Left Column: Inputs & Quick Presets -->
+                    <div class="md:col-span-5 space-y-4 bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                        <div id="inputLabelGroup">
+                            <label id="mainInputLabel" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Nhập số tiền Nhân Dân Tệ (CNY)</label>
+                            <div class="relative">
+                                <input type="number" id="calcAmountInput" value="100" min="0" step="any" oninput="runConversion()" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-xl font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+                                <span id="inputUnitBadge" class="absolute right-4 top-3.5 text-slate-400 font-semibold text-sm">元 (CNY)</span>
+                            </div>
+                        </div>
+
+                        <!-- Quick Presets -->
+                        <div>
+                            <span class="block text-xs text-slate-500 mb-2 font-medium">Chọn nhanh số tiền:</span>
+                            <div id="quickPresetButtons" class="flex flex-wrap gap-2">
+                                <!-- Populated dynamically based on active mode -->
+                            </div>
+                        </div>
+
+                        <!-- Quick Rate Tweak presets -->
+                        <div class="pt-2 border-t border-slate-200">
+                            <span class="block text-xs text-slate-400 mb-1.5">Chỉnh nhanh tỷ giá thị trường:</span>
+                            <div class="flex gap-2">
+                                <button onclick="setRate(3800)" class="bg-white hover:bg-slate-100 border border-slate-200 text-slate-600 text-xs px-2.5 py-1 rounded-lg transition">3,800</button>
+                                <button onclick="setRate(3870)" class="bg-white hover:bg-slate-100 border border-slate-200 text-slate-600 text-xs px-2.5 py-1 rounded-lg transition">3,870 (Chuẩn)</button>
+                                <button onclick="setRate(3900)" class="bg-white hover:bg-slate-100 border border-slate-200 text-slate-600 text-xs px-2.5 py-1 rounded-lg transition">3,900</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Results & Interactive Chinese Breakdown -->
+                    <div class="md:col-span-7 bg-emerald-50 border border-emerald-200 rounded-2xl p-6 flex flex-col justify-between space-y-5 shadow-sm">
+                        
+                        <div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-emerald-800 uppercase tracking-wider">Kết quả quy đổi & Phát âm</span>
+                                <span id="equivalentSummaryBadge" class="bg-emerald-200 text-emerald-900 text-xs font-semibold px-2.5 py-0.5 rounded-md">~ 387,000 VNĐ</span>
+                            </div>
+
+                            <!-- Big Main Chinese Hanzi Output -->
+                            <div id="calcHanziResult" class="text-3xl sm:text-4xl font-extrabold text-slate-900 mt-3 leading-tight">一百元</div>
+                            
+                            <!-- Pinyin Output -->
+                            <div id="calcPinyinResult" class="text-base font-semibold text-emerald-700 mt-1">Yībǎi yuán</div>
+                        </div>
+
+                        <!-- Currency Breakdown Units (Yuan/Kuai, Jiao/Mao, Fen) -->
+                        <div class="bg-white/90 p-4 rounded-xl border border-emerald-200/80 space-y-3">
+                            <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center justify-between">
+                                <span>Phân tích chi tiết đơn vị tiền tệ Trung Quốc</span>
+                                <i class="fa-solid fa-coins text-emerald-600"></i>
+                            </h4>
+                            <div class="grid grid-cols-3 gap-2 text-center">
+                                <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                    <span class="block text-xs text-slate-500">Đồng/Tệ (元/块)</span>
+                                    <span id="unitYuanVal" class="text-base font-extrabold text-slate-900">100</span>
+                                </div>
+                                <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                    <span class="block text-xs text-slate-500">Hào (角/毛)</span>
+                                    <span id="unitJiaoVal" class="text-base font-extrabold text-slate-900">0</span>
+                                </div>
+                                <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                    <span class="block text-xs text-slate-500">Xu (分)</span>
+                                    <span id="unitFenVal" class="text-base font-extrabold text-slate-900">0</span>
+                                </div>
+                            </div>
+
+                            <!-- Full Spoken Sentence Example -->
+                            <div class="pt-2 text-xs border-t border-slate-100">
+                                <span class="text-slate-500">Khẩu ngữ hàng ngày: </span>
+                                <span id="spokenSentenceText" class="font-bold text-slate-800">"一百块" (Yībǎi kuài)</span>
+                            </div>
+                        </div>
+
+                        <!-- Audio Playback Action Bar -->
+                        <div class="flex items-center justify-between pt-1">
+                            <div class="text-xs text-emerald-800 font-medium">
+                                <i class="fa-solid fa-headphones mr-1"></i> Nghe phát âm tiếng Trung bản xứ
+                            </div>
+                            <button onclick="speakText(document.getElementById('calcHanziResult').innerText)" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-md transition flex items-center space-x-2">
+                                <i class="fa-solid fa-volume-high text-sm"></i>
+                                <span>Phát âm câu này</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-6 mt-8">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+            <p>© Camiekanji - Ứng dụng học Tiếng Trung giao tiếp chuyên đề Mua sắm & Quy đổi tiền tệ.</p>
+        </div>
+    </footer>
+
+    <!-- Number Guessing Modal -->
+    <div id="numberGameModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-5">
+            <div class="flex items-center justify-between">
+                <h3 class="font-bold text-lg text-slate-900">Camiekanji - Đoán Số Nhanh</h3>
+                <button onclick="closeNumberGame()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <div class="text-center py-4 space-y-3 bg-slate-50 rounded-2xl p-6 border border-slate-200">
+                <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Nghe số phát âm hoặc nhìn chữ Hán</p>
+                <div id="ngTargetHanzi" class="text-4xl font-extrabold text-slate-900">三十五</div>
+                <div class="flex justify-center pt-2">
+                    <button onclick="speakText(document.getElementById('ngTargetHanzi').innerText)" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2 rounded-xl shadow transition flex items-center space-x-1.5">
+                        <i class="fa-solid fa-volume-high"></i>
+                        <span>Nghe lại</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="ngOptions" class="grid grid-cols-2 gap-3">
+                <!-- Options populated via JS -->
+            </div>
+
+            <div id="ngResult" class="text-center text-sm font-bold h-6"></div>
+        </div>
+    </div>
+
+    <script>
+        // Global state variables
+        let currentXP = 120;
+        let streak = 3;
+        let activeCalcMode = 'cny2vnd'; // 'cny2vnd' or 'vnd2cny'
+
+        // Numbers data (1 to 100)
+        const numbersList = [
+            {n: 1, hanzi: '一', pinyin: 'yī', vn: 'Một'},
+            {n: 2, hanzi: '二', pinyin: 'èr', vn: 'Hai'},
+            {n: 3, hanzi: '三', pinyin: 'sān', vn: 'Ba'},
+            {n: 4, hanzi: '四', pinyin: 'sì', vn: 'Bốn'},
+            {n: 5, hanzi: '五', pinyin: 'wǔ', vn: 'Năm'},
+            {n: 6, hanzi: '六', pinyin: 'liù', vn: 'Sáu'},
+            {n: 7, hanzi: '七', pinyin: 'qī', vn: 'Bảy'},
+            {n: 8, hanzi: '八', pinyin: 'bā', vn: 'Tám'},
+            {n: 9, hanzi: '九', pinyin: 'jiǔ', vn: 'Chín'},
+            {n: 10, hanzi: '十', pinyin: 'shí', vn: 'Mười'},
+            {n: 11, hanzi: '十一', pinyin: 'shíyī', vn: 'Mười một'},
+            {n: 12, hanzi: '十二', pinyin: 'shíèr', vn: 'Mười hai'},
+            {n: 20, hanzi: '二十', pinyin: 'èrshí', vn: 'Hai mươi'},
+            {n: 30, hanzi: '三十', pinyin: 'sānshí', vn: 'Ba mươi'},
+            {n: 50, hanzi: '五十', pinyin: 'wǔshí', vn: 'Năm mươi'},
+            {n: 100, hanzi: '一百', pinyin: 'yībǎi', vn: 'Một trăm'},
+        ];
+
+        // Vocabulary Flashcards data
+        const vocabList = [
+            {hanzi: '多少钱', pinyin: 'Duōshǎo qián', meaning: 'Bao nhiêu tiền?', example: '这个多少钱？ (Cái này bao nhiêu tiền?)'},
+            {hanzi: '贵', pinyin: 'Guì', meaning: 'Đắt / Mắc', example: '太贵了！ (Đắt quá rồi!)'},
+            {hanzi: '便宜', pinyin: 'Piányí', meaning: 'Rẻ', example: '便宜一点儿吧。 (Rẻ hơn một chút đi.)'},
+            {hanzi: '打折', pinyin: 'Dǎzhé', meaning: 'Giảm giá', example: '现在打折吗？ (Bây giờ có giảm giá không?)'},
+            {hanzi: '现金', pinyin: 'Xiànjīn', meaning: 'Tiền mặt', example: '我付现金。 (Tôi trả bằng tiền mặt.)'},
+            {hanzi: '银行卡', pinyin: 'Yínháng kǎ', meaning: 'Thẻ ngân hàng', example: '能刷银行卡吗？ (Có quẹt thẻ ngân hàng được không?)'},
+            {hanzi: '试穿', pinyin: 'Shì chuān', meaning: 'Mặc thử / Thử đồ', example: '我可以试穿吗？ (Tôi có thể thử đồ được không?)'},
+            {hanzi: ' size / 大小', pinyin: 'Dàxiǎo / Chǐcùn', meaning: 'Kích cỡ / Size', example: '有大号的吗？ (Có size lớn không?)'},
+            {hanzi: '颜色', pinyin: 'Yánsè', meaning: 'Màu sắc', example: '有别的颜色吗？ (Có màu khác không?)'},
+            {hanzi: '老板', pinyin: 'Lǎobǎn', meaning: 'Chủ quán / Sếp', example: '老板，便宜点！ (Chủ quán ơi, rẻ chút đi!)'},
+            {hanzi: '买单', pinyin: 'Mǎidān', meaning: 'Thanh toán / Trả tiền', example: '买单，谢谢！ (Thanh toán tiền, cảm ơn!)'},
+            {hanzi: '欢迎光临', pinyin: 'Huānyíng guānglín', meaning: 'Chào mừng quý khách', example: '欢迎光临，请进！ (Chào mừng quý khách, mời vào!)'}
+        ];
+        let currentCard = 0;
+        let isCardFlipped = false;
+
+        // Dialogues data
+        const dialoguesData = [
+            [
+                {speaker: '买家 (Khách):', hanzi: '老板，这个衬衫多少钱？', pinyin: 'Lǎobǎn, zhège chènshān duōshǎo qián?', vn: 'Chủ quán ơi, chiếc áo sơ mi này bao nhiêu tiền?'},
+                {speaker: '卖家 (Chủ quán):', hanzi: '这个一百二十元。', pinyin: 'Zhège yībǎi èrshí yuán.', vn: 'Cái này một trăm hai mươi tệ.'},
+                {speaker: '买家 (Khách):', hanzi: '有点贵，便宜一点儿吧？', pinyin: 'Yǒudiǎn guì, piányí yīdiǎnr ba?', vn: 'Hơi đắt, rẻ hơn một chút được không?'},
+                {speaker: '卖家 (Chủ quán):', hanzi: '好吧，一百元给你。', pinyin: 'Hǎo ba, yībǎi yuán gěi nǐ.', vn: 'Được rồi, bán cho bạn 100 tệ.'}
+            ],
+            [
+                {speaker: '买家 (Khách):', hanzi: '这条裤子可以试穿吗？', pinyin: 'Zhè tiáo kùzi kěyǐ shì chuān ma?', vn: 'Chiếc quần này có được thử không?'},
+                {speaker: '卖家 (Chủ quán):', hanzi: '可以，试衣间在那边。', pinyin: 'Kěyǐ, shì yī jiān zài nàbiān.', vn: 'Được chứ, phòng thử đồ ở đằng kia.'},
+                {speaker: '买家 (Khách):', hanzi: '黑色有吗？', pinyin: 'Hēisè de yǒu ma?', vn: 'Có màu đen không?'},
+                {speaker: '卖家 (Chủ quán):', hanzi: '有，您要什么尺码？', pinyin: 'Yǒu, nín yào shénme chǐmǎ?', vn: 'Có, anh/chị lấy size gì?'}
+            ],
+            [
+                {speaker: '买家 (Khách):', hanzi: '一共多少钱？', pinyin: 'Yīgòng duōshǎo qián?', vn: 'Tổng cộng bao nhiêu tiền?'},
+                {speaker: '卖家 (Chủ quán):', hanzi: '一共二百五十元。', pinyin: 'Yīgòng èrbǎi wǔshí yuán.', vn: 'Tổng cộng hai trăm năm mươi tệ.'},
+                {speaker: '买家 (Khách):', hanzi: '能用微信支付吗？', pinyin: 'Néng yòng Wēixìn zhīfù ma?', vn: 'Có thể dùng WeChat Pay được không?'},
+                {speaker: '卖家 (Chủ quán):', hanzi: '可以，请扫这里。', pinyin: 'Kěyǐ, qǐng sǎo zhèlǐ.', vn: 'Được, xin mời quét mã ở đây.'}
+            ]
+        ];
+
+        // Quiz data
+        const quizData = [
+            {
+                category: 'Từ vựng Mua sắm',
+                question: '"多少钱" có nghĩa là gì?',
+                subText: 'Duōshǎo qián',
+                audioText: '多少钱',
+                options: ['Đắt quá', 'Bao nhiêu tiền?', 'Giảm giá không?', 'Thanh toán tiền mặt'],
+                answer: 1
+            },
+            {
+                category: 'Số đếm',
+                question: 'Số "八" (bā) là số mấy?',
+                subText: 'Phát âm: bā',
+                audioText: '八',
+                options: ['6', '7', '8', '9'],
+                answer: 2
+            },
+            {
+                category: 'Từ vựng Mua sắm',
+                question: 'Từ nào có nghĩa là "Rẻ"?',
+                subText: 'Tìm từ vựng thích hợp',
+                audioText: '便宜',
+                options: ['贵 (Guì)', '便宜 (Piányí)', '打折 (Dǎzhé)', '现金 (Xiànjīn)'],
+                answer: 1
+            },
+            {
+                category: 'Số đếm',
+                question: 'Cách đọc số "50" bằng tiếng Trung là gì?',
+                subText: 'Năm mươi',
+                audioText: '五十',
+                options: ['十五 (shíwǔ)', '五十 (wǔshí)', '五百 (wǔbǎi)', '五十万 (wǔshí wàn)'],
+                answer: 1
+            },
+            {
+                category: 'Giao tiếp',
+                question: 'Khi muốn đề nghị chủ quán giảm giá, bạn nói câu nào?',
+                subText: 'Mặc cả khi mua sắm',
+                audioText: '便宜一点儿吧',
+                options: ['这个多少钱？', '便宜一点儿吧。', '欢迎光临。', '买单，谢谢！'],
+                answer: 1
+            }
+        ];
+        let currentQuizIdx = 0;
+        let correctQuizCount = 0;
+
+        // Initialize App on window load
+        window.onload = function() {
+            renderNumbers();
+            renderFlashcard();
+            loadDialogue(0);
+            loadQuizQuestion();
+            setCalcMode('cny2vnd');
+        };
+
+        // Tab Switching
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(el => {
+                el.classList.remove('bg-emerald-50', 'text-emerald-700', 'font-bold');
+                el.classList.add('text-slate-600');
+            });
+            const activeNav = document.getElementById('nav-' + tabId);
+            if(activeNav) {
+                activeNav.classList.remove('text-slate-600');
+                activeNav.classList.add('bg-emerald-50', 'text-emerald-700', 'font-bold');
+            }
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        // Text-to-Speech function using Web Speech API zh-CN
+        function speakText(text) {
+            if (!('speechSynthesis' in window)) {
+                alert('Trình duyệt của bạn không hỗ trợ phát âm giọng nói.');
+                return;
+            }
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'zh-CN';
+            utterance.rate = 0.85;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // Render Numbers Grid
+        function renderNumbers(filter='') {
+            const grid = document.getElementById('numberGrid');
+            grid.innerHTML = '';
+            
+            const filtered = numbersList.filter(item => 
+                item.n.toString().includes(filter) || 
+                item.hanzi.includes(filter) || 
+                item.pinyin.toLowerCase().includes(filter.toLowerCase()) ||
+                item.vn.toLowerCase().includes(filter.toLowerCase())
+            );
+
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 rounded-xl p-3.5 flex items-center justify-between cursor-pointer transition group';
+                card.onclick = () => speakText(item.hanzi);
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xs font-bold text-slate-400">#${item.n}</span>
+                            <span class="text-lg font-bold text-slate-900 group-hover:text-emerald-700">${item.hanzi}</span>
+                        </div>
+                        <p class="text-xs text-emerald-600 font-semibold">${item.pinyin}</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-xs font-medium text-slate-600">${item.vn}</span>
+                        <div class="text-emerald-500 opacity-0 group-hover:opacity-100 transition text-xs mt-0.5"><i class="fa-solid fa-volume-high"></i></div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterNumbers() {
+            const query = document.getElementById('numberSearch').value;
+            renderNumbers(query);
+        }
+
+        // Flashcards Logic
+        function renderFlashcard() {
+            const card = vocabList[currentCard];
+            document.getElementById('fcHanzi').innerText = card.hanzi;
+            document.getElementById('fcPinyin').innerText = card.pinyin;
+            document.getElementById('fcMeaning').innerText = card.meaning;
+            document.getElementById('fcExample').innerText = `"${card.example}"`;
+            document.getElementById('currentCardIdx').innerText = currentCard + 1;
+            document.getElementById('totalCardIdx').innerText = vocabList.length;
+
+            isCardFlipped = false;
+            document.getElementById('flashcardInner').style.transform = 'rotateY(0deg)';
+        }
+
+        function flipFlashcard() {
+            isCardFlipped = !isCardFlipped;
+            const inner = document.getElementById('flashcardInner');
+            if (isCardFlipped) {
+                inner.style.transform = 'rotateY(180deg)';
+            } else {
+                inner.style.transform = 'rotateY(0deg)';
+            }
+        }
+
+        function nextFlashcard() {
+            currentCard = (currentCard + 1) % vocabList.length;
+            renderFlashcard();
+        }
+
+        function prevFlashcard() {
+            currentCard = (currentCard - 1 + vocabList.length) % vocabList.length;
+            renderFlashcard();
+        }
+
+        // Dialogues Logic
+        function loadDialogue(index) {
+            document.querySelectorAll('.dlg-tab-btn').forEach((btn, idx) => {
+                if(idx === index) {
+                    btn.className = 'dlg-tab-btn bg-emerald-600 text-white text-xs font-semibold px-4 py-2 rounded-xl transition shadow';
+                } else {
+                    btn.className = 'dlg-tab-btn bg-slate-100 text-slate-700 hover:bg-slate-200 text-xs font-semibold px-4 py-2 rounded-xl transition';
+                }
+            });
+
+            const container = document.getElementById('dialogueContainer');
+            container.innerHTML = '';
+
+            dialoguesData[index].forEach(line => {
+                const div = document.createElement('div');
+                div.className = 'bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3';
+                div.innerHTML = `
+                    <div class="space-y-1">
+                        <span class="text-xs font-bold text-emerald-700 uppercase tracking-wider">${line.speaker}</span>
+                        <div class="text-lg font-bold text-slate-900">${line.hanzi}</div>
+                        <div class="text-xs font-semibold text-emerald-600">${line.pinyin}</div>
+                        <div class="text-xs text-slate-500">${line.vn}</div>
+                    </div>
+                    <button onclick="speakText('${line.hanzi}')" class="bg-white hover:bg-emerald-50 border border-slate-200 text-emerald-600 p-3 rounded-xl shadow-sm transition shrink-0 flex items-center justify-center">
+                        <i class="fa-solid fa-volume-high text-base"></i>
+                    </button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Quiz Logic
+        function loadQuizQuestion() {
+            if (currentQuizIdx >= quizData.length) {
+                document.getElementById('quizCard').classList.add('hidden');
+                document.getElementById('quizCompleteCard').classList.remove('hidden');
+                document.getElementById('correctScore').innerText = correctQuizCount;
+                currentXP += 50;
+                document.getElementById('scoreCount').innerText = currentXP;
+                confetti({particleCount: 100, spread: 70, origin: { y: 0.6 }});
+                return;
+            }
+
+            const q = quizData[currentQuizIdx];
+            document.getElementById('quizCurrentNum').innerText = currentQuizIdx + 1;
+            document.getElementById('quizCategoryBadge').innerText = q.category;
+            document.getElementById('quizQuestionText').innerText = q.question;
+            document.getElementById('quizSubText').innerText = q.subText;
+
+            const grid = document.getElementById('quizOptionsGrid');
+            grid.innerHTML = '';
+            document.getElementById('quizFeedback').classList.add('hidden');
+            document.getElementById('nextQuizBtn').classList.add('hidden');
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'bg-white hover:bg-slate-100 border border-slate-200 font-semibold p-4 rounded-xl text-sm text-left text-slate-800 transition shadow-sm';
+                btn.onclick = () => checkQuizAnswer(idx, q.answer, btn);
+                btn.innerText = opt;
+                grid.appendChild(btn);
+            });
+        }
+
+        function checkQuizAnswer(selected, correct, btnEl) {
+            const buttons = document.getElementById('quizOptionsGrid').getElementsByTagName('button');
+            for(let b of buttons) {
+                b.disabled = true;
+            }
+
+            const feedback = document.getElementById('quizFeedback');
+            feedback.classList.remove('hidden');
+
+            if (selected === correct) {
+                btnEl.className = 'bg-emerald-500 text-white font-semibold p-4 rounded-xl text-sm text-left shadow-sm';
+                feedback.className = 'p-4 rounded-xl text-sm font-medium flex items-center space-x-2 bg-emerald-100 text-emerald-800 border border-emerald-200';
+                feedback.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600 text-lg"></i><span>Chính xác! Bạn thật tuyệt vời.</span>';
+                correctQuizCount++;
+            } else {
+                btnEl.className = 'bg-rose-500 text-white font-semibold p-4 rounded-xl text-sm text-left shadow-sm';
+                buttons[correct].className = 'bg-emerald-500 text-white font-semibold p-4 rounded-xl text-sm text-left shadow-sm';
+                feedback.className = 'p-4 rounded-xl text-sm font-medium flex items-center space-x-2 bg-rose-100 text-rose-800 border border-rose-200';
+                feedback.innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-600 text-lg"></i><span>Chưa chính xác. Đáp án đúng đã được đánh dấu màu xanh.</span>';
+            }
+
+            document.getElementById('nextQuizBtn').classList.remove('hidden');
+        }
+
+        function nextQuizQuestion() {
+            currentQuizIdx++;
+            loadQuizQuestion();
+        }
+
+        function restartQuiz() {
+            currentQuizIdx = 0;
+            correctQuizCount = 0;
+            document.getElementById('quizCard').classList.remove('hidden');
+            document.getElementById('quizCompleteCard').classList.add('hidden');
+            loadQuizQuestion();
+        }
+
+        function setCalcMode(mode) {
+            activeCalcMode = mode;
+            const btnCny2Vnd = document.getElementById('calcMode-cny2vnd');
+            const btnVnd2Cny = document.getElementById('calcMode-vnd2cny');
+            const inputLabel = document.getElementById('mainInputLabel');
+            const unitBadge = document.getElementById('inputUnitBadge');
+            const presetContainer = document.getElementById('quickPresetButtons');
+            const inputEl = document.getElementById('calcAmountInput');
+
+            if (mode === 'cny2vnd') {
+                btnCny2Vnd.className = "pb-3 text-sm font-bold border-b-2 border-emerald-600 text-emerald-600 transition flex items-center space-x-2";
+                btnVnd2Cny.className = "pb-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700 transition flex items-center space-x-2";
+                inputLabel.innerText = "Nhập số tiền Nhân Dân Tệ (CNY)";
+                unitBadge.innerText = "元 (CNY)";
+                inputEl.value = "100";
+                
+                presetContainer.innerHTML = `
+                    <button onclick="setCalcPreset(10)" class="bg-white hover:bg-emerald-50 border border-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition">10 元</button>
+                    <button onclick="setCalcPreset(50)" class="bg-white hover:bg-emerald-50 border border-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition">50 元</button>
+                    <button onclick="setCalcPreset(100)" class="bg-white hover:bg-emerald-50 border border-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition">100 元</button>
+                    <button onclick="setCalcPreset(258.4)" class="bg-white hover:bg-emerald-50 border border-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition">258.4 元</button>
+                    <button onclick="setCalcPreset(500)" class="bg-white hover:bg-emerald-50 border border-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition">500 元</button>
+                `;
+            } else {
+                btnVnd2Cny.className = "pb-3 text-sm font-bold border-b-2 border-emerald-600 text-emerald-600 transition flex items-center space-x-2";
+                btnCny2Vnd.className = "pb-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700 transition flex items-center space-x-2";
+                inputLabel.innerText = "Nhập số tiền Việt Nam Đồng (VNĐ)";
+                unitBadge.innerText = "VNĐ";
+                inputEl.value = "100000";
+
+                presetContainer.innerHTML = `
+                    <button onclick="setCalcPreset(50000)" class="bg-white hover:bg-emerald-50 border border-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition">50,000 đ</button>
+                    <button onclick="setCalcPreset(100000)" class="bg-white hover:bg-emerald-50 border border-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition">100,000 đ</button>
+                    <button onclick="setCalcPreset(200000)" class="bg-white hover:bg-emerald-50 border border-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition">200,000 đ</button>
+                    <button onclick="setCalcPreset(500000)" class="bg-white hover:bg-emerald-50 border border-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition">500,000 đ</button>
+                    <button onclick="setCalcPreset(1000000)" class="bg-white hover:bg-emerald-50 border border-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition">1,000,000 đ</button>
+                `;
+            }
+
+            runConversion();
+        }
+
+        function setRate(rate) {
+            document.getElementById('exchangeRateInput').value = rate;
+            runConversion();
+        }
+
+        function setCalcPreset(val) {
+            document.getElementById('calcAmountInput').value = val;
+            runConversion();
+        }
+
+        function runConversion() {
+            const rawAmount = parseFloat(document.getElementById('calcAmountInput').value) || 0;
+            const rate = parseFloat(document.getElementById('exchangeRateInput').value) || 3870;
+
+            let cnyTotal = 0;
+            let vndTotal = 0;
+
+            if (activeCalcMode === 'cny2vnd') {
+                cnyTotal = Math.max(0, rawAmount);
+                vndTotal = cnyTotal * rate;
+                document.getElementById('equivalentSummaryBadge').innerText = `~ ${Math.round(vndTotal).toLocaleString('vi-VN')} VNĐ`;
+            } else {
+                vndTotal = Math.max(0, rawAmount);
+                cnyTotal = vndTotal / rate;
+                document.getElementById('equivalentSummaryBadge').innerText = `Quy đổi: ${vndTotal.toLocaleString('vi-VN')} VNĐ`;
+            }
+
+            // Extract Yuan (元/块), Jiao (角/毛), Fen (分)
+            const cnyRounded = Math.round(cnyTotal * 100) / 100;
+            const yuan = Math.floor(cnyRounded);
+            const remainingCents = Math.round((cnyRounded - yuan) * 100);
+            const jiao = Math.floor(remainingCents / 10);
+            const fen = remainingCents % 10;
+
+            // Update Breakdown units display
+            document.getElementById('unitYuanVal').innerText = yuan;
+            document.getElementById('unitJiaoVal').innerText = jiao;
+            document.getElementById('unitFenVal').innerText = fen;
+
+            // Build Chinese Hanzi & Pinyin
+            const chineseResult = buildChineseMoneyString(yuan, jiao, fen);
+            document.getElementById('calcHanziResult').innerText = chineseResult.hanzi;
+            document.getElementById('calcPinyinResult').innerText = chineseResult.pinyin;
+
+            // Build Spoken Kuai/Mao/Fen string for everyday spoken Chinese
+            const spokenResult = buildSpokenMoneyString(yuan, jiao, fen);
+            document.getElementById('spokenSentenceText').innerText = `"${spokenResult.hanzi}" (${spokenResult.pinyin})`;
+        }
+
+        // Helper: Chinese number to Hanzi (0 - 99,999)
+        function numToChineseHanzi(num) {
+            if (num <= 0) return '零';
+            const digits = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+            
+            if (num < 10) return digits[num];
+            if (num === 10) return '十';
+            if (num < 20) return '十' + digits[num % 10];
+            if (num < 100) {
+                let ten = Math.floor(num / 10);
+                let rem = num % 10;
+                return digits[ten] + '十' + (rem === 0 ? '' : digits[rem]);
+            }
+            if (num < 1000) {
+                let hun = Math.floor(num / 100);
+                let rem = num % 100;
+                let res = digits[hun] + '百';
+                if (rem === 0) return res;
+                if (rem < 10) return res + '零' + digits[rem];
+                return res + numToChineseHanzi(rem);
+            }
+            if (num < 10000) {
+                let th = Math.floor(num / 1000);
+                let rem = num % 1000;
+                let res = digits[th] + '千';
+                if (rem === 0) return res;
+                if (rem < 100) return res + '零' + numToChineseHanzi(rem);
+                return res + numToChineseHanzi(rem);
+            }
+            if (num < 100000) {
+                let wan = Math.floor(num / 10000);
+                let rem = num % 10000;
+                let res = digits[wan] + '万';
+                if (rem === 0) return res;
+                if (rem < 1000) return res + '零' + numToChineseHanzi(rem);
+                return res + numToChineseHanzi(rem);
+            }
+            return num.toString();
+        }
+
+        // Helper: Convert number to Pinyin approximation
+        function numToChinesePinyin(num) {
+            if (num === 0) return 'líng';
+            if (num === 1) return 'yī';
+            if (num === 2) return 'èr';
+            if (num === 5) return 'wǔ';
+            if (num === 10) return 'shí';
+            if (num === 20) return 'èrshí';
+            if (num === 25) return 'èrshíwǔ';
+            if (num === 50) return 'wǔshí';
+            if (num === 100) return 'yībǎi';
+            if (num === 500) return 'wǔbǎi';
+            if (num === 1000) return 'yīqiān';
+            return num.toString();
+        }
+
+        // Formal written Chinese Money converter (Yuan / Jiao / Fen)
+        function buildChineseMoneyString(yuan, jiao, fen) {
+            if (yuan === 0 && jiao === 0 && fen === 0) {
+                return { hanzi: '零元', pinyin: 'Líng yuán' };
+            }
+
+            let hanziParts = [];
+            let pinyinParts = [];
+
+            if (yuan > 0) {
+                hanziParts.push(numToChineseHanzi(yuan) + '元');
+                pinyinParts.push(numToChinesePinyin(yuan) + ' yuán');
+            }
+
+            if (jiao > 0) {
+                hanziParts.push(numToChineseHanzi(jiao) + '角');
+                pinyinParts.push(numToChinesePinyin(jiao) + ' jiǎo');
+            } else if (yuan > 0 && fen > 0) {
+                hanziParts.push('零');
+                pinyinParts.push('líng');
+            }
+
+            if (fen > 0) {
+                hanziParts.push(numToChineseHanzi(fen) + '分');
+                pinyinParts.push(numToChinesePinyin(fen) + ' fēn');
+            }
+
+            return {
+                hanzi: hanziParts.join(''),
+                pinyin: pinyinParts.join(' ')
+            };
+        }
+
+        // Spoken everyday Chinese Money converter (Kuai / Mao / Fen)
+        function buildSpokenMoneyString(yuan, jiao, fen) {
+            if (yuan === 0 && jiao === 0 && fen === 0) {
+                return { hanzi: '零块钱', pinyin: 'Líng kuài qián' };
+            }
+
+            let hanziParts = [];
+            let pinyinParts = [];
+
+            if (yuan > 0) {
+                hanziParts.push(numToChineseHanzi(yuan) + '块');
+                pinyinParts.push(numToChinesePinyin(yuan) + ' kuài');
+            }
+
+            if (jiao > 0) {
+                hanziParts.push(numToChineseHanzi(jiao) + '毛');
+                pinyinParts.push(numToChinesePinyin(jiao) + ' máo');
+            }
+
+            if (fen > 0) {
+                hanziParts.push(numToChineseHanzi(fen) + '分');
+                pinyinParts.push(numToChinesePinyin(fen) + ' fēn');
+            }
+
+            return {
+                hanzi: hanziParts.join(''),
+                pinyin: pinyinParts.join(' ')
+            };
+        }
+
+        // Number Mini-Game
+        function openNumberGame() {
+            document.getElementById('numberGameModal').classList.remove('hidden');
+            setupNumberGameRound();
+        }
+
+        function closeNumberGame() {
+            document.getElementById('numberGameModal').classList.add('hidden');
+        }
+
+        function setupNumberGameRound() {
+            const randomNum = numbersList[Math.floor(Math.random() * numbersList.length)];
+            document.getElementById('ngTargetHanzi').innerText = randomNum.hanzi;
+            
+            let opts = [randomNum.vn];
+            while(opts.length < 4) {
+                let randOpt = numbersList[Math.floor(Math.random() * numbersList.length)].vn;
+                if(!opts.includes(randOpt)) opts.push(randOpt);
+            }
+            opts.sort(() => Math.random() - 0.5);
+
+            const grid = document.getElementById('ngOptions');
+            grid.innerHTML = '';
+            document.getElementById('ngResult').innerText = '';
+
+            opts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'bg-slate-50 hover:bg-emerald-50 border border-slate-200 font-semibold p-3 rounded-xl text-sm text-slate-800 transition';
+                btn.onclick = () => {
+                    if(opt === randomNum.vn) {
+                        document.getElementById('ngResult').innerHTML = '<span class="text-emerald-600"><i class="fa-solid fa-check mr-1"></i> Chính xác! Tuyệt vời!</span>';
+                        setTimeout(setupNumberGameRound, 1200);
+                    } else {
+                        document.getElementById('ngResult').innerHTML = '<span class="text-rose-600"><i class="fa-solid fa-xmark mr-1"></i> Sai rồi, thử lại nhé!</span>';
+                    }
+                };
+                btn.innerText = opt;
+                grid.appendChild(btn);
+            });
+        }
+    </script>
+</body>
+</html>
